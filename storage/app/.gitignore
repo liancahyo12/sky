@@ -1,3 +1,7 @@
 *
 !public/
+!foto_identitas
+!bukti_bayar
+!format
+!tagihan
 !.gitignore
