@@ -231,7 +231,7 @@ class BookingController extends Controller
             'booking' => booking::leftJoin('jenis_pakets', 'jenis_pakets.id', 'bookings.jenis_paket_id')->leftJoin('pelanggans', 'pelanggans.id', 'bookings.pelanggan_id')->leftJoin('mobils','mobils.id', 'bookings.mobil_id')->where([['bookings.id', '=', $id], ['bookings.status', '=', 1]])->get([
                 'bookings.*',
                 'pelanggans.nama',
-                'pelanggans.no_identitas',
+                DB::raw('concat(left(no_identitas, 2), "*******", right(no_identitas, 2)) as no_identitas'),
                 'pelanggans.jenis_identitas_id',
                 'pelanggans.alamat',
                 'pelanggans.alias',
@@ -258,7 +258,7 @@ class BookingController extends Controller
             'booking' => booking::leftJoin('jenis_pakets', 'jenis_pakets.id', 'bookings.jenis_paket_id')->leftJoin('pelanggans', 'pelanggans.id', 'bookings.pelanggan_id')->leftJoin('mobils','mobils.id', 'bookings.mobil_id')->where([['bookings.id', '=', $id], ['bookings.status', '=', 1]])->get([
                 'bookings.*',
                 'pelanggans.nama',
-                'pelanggans.no_identitas',
+                DB::raw('concat(left(no_identitas, 2), "*******", right(no_identitas, 2)) as no_identitas'),
                 'pelanggans.jenis_identitas_id',
                 'pelanggans.alamat',
                 'pelanggans.alias',
@@ -362,7 +362,7 @@ class BookingController extends Controller
         $html = '';
         $mobils = mobil::whereRaw("NOT EXISTS(
             SELECT * FROM bookings 
-            WHERE mobils.id=bookings.mobil_id AND mobils.sedia_status=1 AND (
+            WHERE mobils.id=bookings.mobil_id AND mobils.status=1 AND (
             (awal_sewa BETWEEN ? AND ?) OR 
             (akhir_sewa BETWEEN ? AND ?) OR
             (? BETWEEN awal_sewa AND akhir_sewa) OR
@@ -375,12 +375,31 @@ class BookingController extends Controller
         return response()->json(['html' => $html]);
     }
 
+    public function get_drivers(Request $request)
+    {
+        $html = '';
+        $drivers = driver::whereRaw("NOT EXISTS(
+            SELECT * FROM bookings 
+            WHERE drivers.id=bookings.driver_id AND drivers.status=1 AND (
+            (awal_sewa BETWEEN ? AND ?) OR 
+            (akhir_sewa BETWEEN ? AND ?) OR
+            (? BETWEEN awal_sewa AND akhir_sewa) OR
+            (? BETWEEN awal_sewa AND akhir_sewa)))", [$request->start, $request->end, $request->start, $request->end, $request->start, $request->end])->get()->all();
+
+        $html .= '<option disabled selected value></option>';
+        $html .= '<option value="xx">--- Tanpa Driver ---</option>';
+        foreach ($drivers as $driver) {
+            $html .= '<option value="'.$driver->id.'">'.$driver->nama.'</option>';
+        }
+        return response()->json(['html' => $html]);
+    }
+
     public function gete_mobils(Request $request)
     {
         $html = '';
         $mobils = mobil::whereRaw("NOT EXISTS(
             SELECT * FROM bookings 
-            WHERE mobils.id=bookings.mobil_id AND mobils.sedia_status=1 NOT IN(bookings.id=?) AND (
+            WHERE mobils.id=bookings.mobil_id AND mobils.status=1 NOT IN(bookings.id=?) AND (
             (awal_sewa BETWEEN ? AND ?) OR 
             (akhir_sewa BETWEEN ? AND ?) OR
             (? BETWEEN awal_sewa AND akhir_sewa) OR
@@ -389,6 +408,25 @@ class BookingController extends Controller
         $html .= '<option disabled selected value></option>';
         foreach ($mobils as $mobil) {
             $html .= '<option value="'.$mobil->id.'">'.$mobil->tipe.' '.$mobil->plat.'</option>';
+        }
+        return response()->json(['html' => $html]);
+    }
+
+    public function gete_drivers(Request $request)
+    {
+        $html = '';
+        $drivers = driver::whereRaw("NOT EXISTS(
+            SELECT * FROM bookings 
+            WHERE drivers.id=bookings.driver_id AND drivers.status=1 NOT IN(bookings.id=?) AND (
+            (awal_sewa BETWEEN ? AND ?) OR 
+            (akhir_sewa BETWEEN ? AND ?) OR
+            (? BETWEEN awal_sewa AND akhir_sewa) OR
+            (? BETWEEN awal_sewa AND akhir_sewa)))", [$request->booking_id, $request->start, $request->end, $request->start, $request->end, $request->start, $request->end])->get()->all();
+
+        $html .= '<option disabled selected value></option>';
+        $html .= '<option value="xx">--- Tanpa Driver ---</option>';
+        foreach ($drivers as $driver) {
+            $html .= '<option value="'.$driver->id.'">'.$driver->nama.'</option>';
         }
         return response()->json(['html' => $html]);
     }

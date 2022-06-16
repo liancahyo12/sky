@@ -15,6 +15,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\JenisIdentitasController;
+use App\Http\Controllers\JenisPaketController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\TagihanController;
 use App\Http\Controllers\ActivityLogController;
@@ -170,6 +171,29 @@ Route::group([
             ->middleware(['boilerplateauth', 'ability:admin,hapus_jenisidentitas'])
             ->name('delete-jenisidentitas');
 
+        //jenis paket
+        Route::get('/jenispaket', [JenisPaketController::class, 'index'])
+            ->middleware(['boilerplateauth', 'ability:admin,lihat_jenispaket'])
+            ->name('jenispaket');
+        Route::get('/buat-jenispaket', [JenisPaketController::class, 'create'])
+            ->middleware(['boilerplateauth', 'ability:admin,buat_jenispaket'])
+            ->name('buat-jenispaket');
+        Route::post('/buat-jenispaket', [JenisPaketController::class, 'store'])
+            ->middleware(['boilerplateauth', 'ability:admin,buat_jenispaket'])
+            ->name('store-jenispaket');
+        Route::get('/show-jenispaket/{id}', [JenisPaketController::class, 'show'])
+            ->middleware(['boilerplateauth', 'ability:admin,show_jenispaket'])
+            ->name('show-jenispaket');
+        Route::get('/edit-jenispaket/{id}', [JenisPaketController::class, 'edit'])
+            ->middleware(['boilerplateauth', 'ability:admin,edit_jenispaket'])
+            ->name('edit-jenispaket');
+        Route::put('/edit-jenispaket/{id}', [JenisPaketController::class, 'update'])
+            ->middleware(['boilerplateauth', 'ability:admin,edit_jenispaket'])
+            ->name('update-jenispaket');
+        Route::delete('/delete-jenispaket/{id}', [JenisPaketController::class, 'destroy'])
+            ->middleware(['boilerplateauth', 'ability:admin,hapus_jenispaket'])
+            ->name('delete-jenispaket');
+
         //pelanggan
         Route::get('/pelanggan', [PelangganController::class, 'index'])
             ->middleware(['boilerplateauth', 'ability:admin,lihat_pelanggan'])
@@ -238,6 +262,12 @@ Route::group([
         Route::get('/buat-booking/gete-mobils', [BookingController::class, 'gete_mobils'])
             ->middleware(['boilerplateauth', 'ability:admin,buat_booking'])
             ->name('gete-mobils');
+        Route::get('/buat-booking/get-drivers', [BookingController::class, 'get_drivers'])
+            ->middleware(['boilerplateauth', 'ability:admin,buat_booking'])
+            ->name('get-drivers');
+        Route::get('/buat-booking/gete-drivers', [BookingController::class, 'gete_drivers'])
+            ->middleware(['boilerplateauth', 'ability:admin,buat_booking'])
+            ->name('gete-drivers');
 
         //bayar booking
         Route::get('/cetak-tagihan/{id}.pdf', [BookingController::class, 'cetak_tagihan'])

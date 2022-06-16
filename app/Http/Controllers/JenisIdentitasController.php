@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\jenis_identitas;
 
 class JenisIdentitasController extends Controller
 {
@@ -32,53 +33,77 @@ class JenisIdentitasController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+                'jenis_identitas'  => 'required',
+            ]);
+
+        $input['jenis_identitas'] = $request->jenis_identitas;
+
+        $jenisidentitas = jenis_identitas::create($input);
+
+        return redirect()->route('boilerplate.jenisidentitas')
+                ->with('growl', [__('Jenis Identitas berhasil ditambahkan'), 'success']);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\jenis_paket  $jenis_paket
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        return view('boilerplate::jenisidentitas.show');
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\jenis_paket  $jenis_paket
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        return view('boilerplate::jenisidentitas.edit');
+        return view('boilerplate::jenisidentitas.edit', [
+            'jenis_identitas' => jenis_identitas::where([['id', '=', $id], ['status', '=', 1]])->first(),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Http\Requests\Updatejenis_paketRequest  $request
+     * @param  \App\Models\jenis_paket  $jenis_paket
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        //
+        $input = jenis_identitas::where('id', $id)->first();
+
+        $this->validate($request, [
+                'jenis_identitas'  => 'required',
+            ]);
+
+        $input['jenis_identitas'] = $request->jenis_identitas;
+
+        $jenisidentitas = $input->save();
+
+        return redirect()->route('boilerplate.jenisidentitas')
+                ->with('growl', [__('Jenis Identitas berhasil diubah'), 'success']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\jenis_paket  $jenis_paket
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        //
+        $input = jenis_identitas::where('id', $id)->first();
+        $input['status'] = 0;
+        $driver = $input->save();
     }
 }

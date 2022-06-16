@@ -19,5 +19,11 @@ class Pengaturan
             'permission' => 'lihat_jenisidentitas',
             'order' => 100,
         ]);
+        $item->add('Jenis Paket', [
+            'route' => 'boilerplate.jenispaket',
+            'active' => 'boilerplate.jenispaket,boilerplate.edit-jenispaket,boilerplate.buat-jenispaket,boilerplate.show-jenispaket',
+            'permission' => 'lihat_jenispaket',
+            'order' => 101,
+        ]);
     }
 }

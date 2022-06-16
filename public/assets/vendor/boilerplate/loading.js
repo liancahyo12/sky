@@ -7,7 +7,7 @@ $(document).on('submit', function() {
     return false;
 });
 
-$('.btn-danger').on('click', function() {
+$(document).on('click', '[data-action="batal"]', function() {
     if(confirm('Apakah anda yakin?')) {
         $("#waitttAmazingLover").css("display", "block");
         return true;

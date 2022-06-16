@@ -27,19 +27,19 @@ class MobilDatatable extends Datatable
     public function columns(): array
     {
         return [
-            Column::add('Status Sedia')
-                ->data('sedia_status', function (mobil $mobil) {
-                    $badge1 = '<span class="badge badge-pill badge-%s">%s</span>';
-                    if ($mobil->sedia_status == 1) {
-                        return sprintf($badge1, 'success', __('tersedia'));
-                    }else if($mobil->sedia_status == 2){
-                        return sprintf($badge1, 'info', __('sedang digunakan'));
-                    }else if($mobil->sedia_status == 3){
-                        return sprintf($badge1, 'secondary', __('booked'));
-                    }else if($mobil->sedia_status == 4){
-                        return sprintf($badge1, 'danger', __('tidak aktif'));
-                    }
-                }),
+            // Column::add('Status Sedia')
+            //     ->data('sedia_status', function (mobil $mobil) {
+            //         $badge1 = '<span class="badge badge-pill badge-%s">%s</span>';
+            //         if ($mobil->sedia_status == 1) {
+            //             return sprintf($badge1, 'success', __('tersedia'));
+            //         }else if($mobil->sedia_status == 2){
+            //             return sprintf($badge1, 'info', __('sedang digunakan'));
+            //         }else if($mobil->sedia_status == 3){
+            //             return sprintf($badge1, 'secondary', __('booked'));
+            //         }else if($mobil->sedia_status == 4){
+            //             return sprintf($badge1, 'danger', __('tidak aktif'));
+            //         }
+            //     }),
 
             Column::add('Id')
                 ->data('id'),

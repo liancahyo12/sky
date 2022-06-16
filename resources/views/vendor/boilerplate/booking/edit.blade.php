@@ -38,14 +38,6 @@
                 @endforeach
             </x-boilerplate::select2>
             <x-boilerplate::select2 name="driver" id="driver" label="Pilih Driver*" required>
-                <option value="xx" @if ($booking->driver_id==null)
-                    selected
-                    @endif> --- Tanpa Driver ---</option>
-                @foreach ($driver as $position)
-                    <option value="{{ $position->id }}" @if ($position->id==$booking->driver_id)
-                        selected
-                        @endif>{{ $position->nama }}</option>
-                @endforeach
             </x-boilerplate::select2>
             <x-boilerplate::select2 name="mobil" id="mobil" label="Pilih Mobil*" required>
             </x-boilerplate::select2>
@@ -130,6 +122,19 @@
             });
 
             $.ajax({
+                url: "{{ route('boilerplate.gete-drivers') }}?booking_id={{ $booking->id }}"+"&start=" + tgl_sewas1 + "&end=" + tgl_sewae1,
+                method: 'GET',
+                success: function(data) {
+                    $('#driver').html(data.html);
+                    if ('{{ $booking->driver_id }}'==0) {
+                        $('#driver').val('xx');
+                    }else{
+                        $('#driver').val('{{ $booking->driver_id }}');
+                    }
+                }
+            });
+
+            $.ajax({
                 url: "{{ route('boilerplate.get-paket') }}?mobil_id={{ $booking->mobil_id }}&wilayah={{ $booking->wilayah_id }}",
                 method: 'GET',
                 success: function(data) {
@@ -175,6 +180,14 @@
                     method: 'GET',
                     success: function(data) {
                         $('#mobil').html(data.html);
+                    }
+                });
+                
+                $.ajax({
+                    url: "{{ route('boilerplate.gete-drivers') }}?booking_id={{ $booking->id }}"+"&start=" + tgl_sewas1 + "&end=" + tgl_sewae1,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#driver').html(data.html);
                     }
                 });
             });

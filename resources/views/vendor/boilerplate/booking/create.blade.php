@@ -51,10 +51,6 @@
                 @endforeach
             </x-boilerplate::select2>
             <x-boilerplate::select2 name="driver" id="driver" label="Pilih Driver*" required>
-                <option value="xx">--- Tanpa Driver ---</option>
-                @foreach ($driver as $position)
-                    <option value="{{ $position->id }}">{{ $position->nama }}</option>
-                @endforeach
             </x-boilerplate::select2>
             <x-boilerplate::select2 name="mobil" id="mobil" label="Pilih Mobil*" required>
             </x-boilerplate::select2>
@@ -137,6 +133,14 @@
                 method: 'GET',
                 success: function(data) {
                     $('#mobil').html(data.html);
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('boilerplate.get-drivers') }}?start=" + tgl_sewas1 + "&end=" + tgl_sewae1,
+                method: 'GET',
+                success: function(data) {
+                    $('#driver').html(data.html);
                 }
             });
         });

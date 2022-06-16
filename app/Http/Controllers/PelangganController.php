@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\pelanggan;
+use App\Models\jenis_identitas;
 use Illuminate\Http\Request;
+use DB;
 
 class PelangganController extends Controller
 {
@@ -44,9 +46,21 @@ class PelangganController extends Controller
      * @param  \App\Models\pelanggan  $pelanggan
      * @return \Illuminate\Http\Response
      */
-    public function show(pelanggan $pelanggan)
+    public function show($id)
     {
-        return view('boilerplate::pelanggan.show');
+        return view('boilerplate::pelanggan.show', [
+            'pelanggan' => pelanggan::where([['status', '=', 1], ['id', '=', $id]])->get([
+                'id',
+                'nama',
+                DB::raw('concat(left(no_identitas, 2), "*******", right(no_identitas, 2)) as no_identitas'),
+                'jenis_identitas_id',
+                'alamat',
+                'alias',
+                'group',
+                'kenalan',])->first(),
+            'jenis_identitas' => jenis_identitas::where('status', 1)->get()->all(),
+            
+        ]);
     }
 
     /**
@@ -55,16 +69,28 @@ class PelangganController extends Controller
      * @param  \App\Models\pelanggan  $pelanggan
      * @return \Illuminate\Http\Response
      */
-    public function edit(pelanggan $pelanggan)
+    public function edit($id)
     {
-        return view('boilerplate::pelanggan.edit');
+        return view('boilerplate::pelanggan.edit', [
+            'pelanggan' => pelanggan::where([['status', '=', 1], ['id', '=', $id]])->get([
+                'id',
+                'nama',
+                'no_identitas',
+                'jenis_identitas_id',
+                'alamat',
+                'alias',
+                'group',
+                'kenalan',])->first(),
+            'jenis_identitas' => jenis_identitas::where('status', 1)->get()->all(),
+            
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\pelanggan  $pelanggan
+     * @param  \App\Mod/els\pelanggan  $pelanggan
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, pelanggan $pelanggan)
@@ -80,6 +106,8 @@ class PelangganController extends Controller
      */
     public function destroy(pelanggan $pelanggan)
     {
-        //
+        $input = pelanggan::where('id', $id)->first();
+        $input['status'] = 0;
+        $dele = $input->save();
     }
 }

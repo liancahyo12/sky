@@ -13,11 +13,11 @@
             <span class="badge badge-pill badge-success">Selesai</span>
         </x-slot>
         
-        {{-- <x-boilerplate::select2 name="mobil" id="mobil" label="Cari Berdasarakan Mobil" required>
+        <x-boilerplate::select2 name="mobil" id="mobil" label="Cari Berdasarakan Mobil" required>
                 @foreach ($mobil as $position)
                     <option value="{{ $position->id }}">{{ $position->mobil }}</option>
                 @endforeach
-        </x-boilerplate::select2> --}}
+        </x-boilerplate::select2>
         @include('boilerplate::load.fullcalendar')
         @push('js')
         @component('boilerplate::minify')
@@ -48,6 +48,31 @@
                         
                     });
                     calendar.render();
+
+                    
+                    $('#mobil').on( "change", function() {
+                        calendar = new FullCalendar.Calendar(calendarEl, {
+                        headerToolbar: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+                        },
+                        buttonIcons: false,
+                        navLinks: true,
+                        dayMaxEvents: true,
+                        locale: 'id',
+                        eventSources: [
+                            {
+                                url: "{{ route('boilerplate.get-jadwal-mobil') }}?mobil_id=" + $('#mobil').val(),
+                                failure: function() {
+                                    alert('there was an error while fetching events!');
+                                },
+                            }
+                        ]
+                        
+                    });
+                    calendar.render();
+                    });
                 });
 
                 

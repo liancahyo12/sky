@@ -13,7 +13,7 @@ class ActivityLogDatatable extends Datatable
 
     public function datasource()
     {
-        $logs = DB::select('select description, subject_type, concat(first_name, " ", last_name) as pengguna, properties, activity_log.created_at from activity_log left join users on users.id=activity_log.causer_id');
+        $logs = DB::select('select description, subject_type, concat(first_name, " ", last_name) as pengguna, properties, activity_log.created_at from activity_log left join users on users.id=activity_log.causer_id order by activity_log.created_at desc');
 
         return $logs;
     }

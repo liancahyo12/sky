@@ -27,20 +27,20 @@ class DriverDatatable extends Datatable
     public function columns(): array
     {
         return [
-            Column::add('Status Sedia')
-                ->width('120px')
-                ->data('sedia_status', function (driver $driver) {
-                    $badge1 = '<span class="badge badge-pill badge-%s">%s</span>';
-                    if ($driver->sedia_status == 1) {
-                        return sprintf($badge1, 'success', __('tersedia'));
-                    }else if($driver->sedia_status == 2){
-                        return sprintf($badge1, 'info', __('sedang digunakan'));
-                    }else if($driver->sedia_status == 3){
-                        return sprintf($badge1, 'secondary', __('booked'));
-                    }else if($driver->sedia_status == 4){
-                        return sprintf($badge1, 'danger', __('tidak aktif'));
-                    }
-                }),
+            // Column::add('Status Sedia')
+            //     ->width('120px')
+            //     ->data('sedia_status', function (driver $driver) {
+            //         $badge1 = '<span class="badge badge-pill badge-%s">%s</span>';
+            //         if ($driver->sedia_status == 1) {
+            //             return sprintf($badge1, 'success', __('tersedia'));
+            //         }else if($driver->sedia_status == 2){
+            //             return sprintf($badge1, 'info', __('sedang digunakan'));
+            //         }else if($driver->sedia_status == 3){
+            //             return sprintf($badge1, 'secondary', __('booked'));
+            //         }else if($driver->sedia_status == 4){
+            //             return sprintf($badge1, 'danger', __('tidak aktif'));
+            //         }
+            //     }),
 
             Column::add('Id')
                 ->width('50px')

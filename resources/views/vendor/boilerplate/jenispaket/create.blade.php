@@ -1,16 +1,16 @@
 @extends('boilerplate::layout.index', [
-    'title' => __('Jenis Identitas'),
-    'subtitle' => __('Edit Jenis Identitas'),
+    'title' => __('Jenis Paket'),
+    'subtitle' => __('Tambah Jenis Paket'),
     'breadcrumb' => [
-        __('Edit Jenis Identitas') 
+        __('Tambah Jenis Paket') 
     ]
 ])
 
 @section('content')
-    <x-boilerplate::form :route="['boilerplate.update-jenisidentitas', $jenis_identitas->id]" method="put" files>
+    <x-boilerplate::form :route="['boilerplate.store-jenispaket']" method="post" files>
         @csrf
         <x-boilerplate::card>
-            <x-boilerplate::input name="jenis_identitas" label="Jenis Identitas*" value="{{ $jenis_identitas->jenis_identitas }}" required/>
+            <x-boilerplate::input name="jenis_paket" label="Jenis Paket*" required/>
         </x-boilerplate::card>
         <div class="row">
             &nbsp; &nbsp;

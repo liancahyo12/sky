@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Storejenis_paketRequest;
 use App\Http\Requests\Updatejenis_paketRequest;
+use Illuminate\Http\Request;
 use App\Models\jenis_paket;
 
 class JenisPaketController extends Controller
@@ -15,7 +16,7 @@ class JenisPaketController extends Controller
      */
     public function index()
     {
-        //
+        return view('boilerplate::jenispaket.index');
     }
 
     /**
@@ -25,7 +26,7 @@ class JenisPaketController extends Controller
      */
     public function create()
     {
-        //
+        return view('boilerplate::jenispaket.create');
     }
 
     /**
@@ -34,9 +35,18 @@ class JenisPaketController extends Controller
      * @param  \App\Http\Requests\Storejenis_paketRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Storejenis_paketRequest $request)
+    public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+                'jenis_paket'  => 'required',
+            ]);
+
+        $input['jenis_paket'] = $request->jenis_paket;
+
+        $jenispaket = jenis_paket::create($input);
+
+        return redirect()->route('boilerplate.jenispaket')
+                ->with('growl', [__('Jenis Paket berhasil ditambahkan'), 'success']);
     }
 
     /**
@@ -45,7 +55,7 @@ class JenisPaketController extends Controller
      * @param  \App\Models\jenis_paket  $jenis_paket
      * @return \Illuminate\Http\Response
      */
-    public function show(jenis_paket $jenis_paket)
+    public function show($id)
     {
         //
     }
@@ -56,9 +66,11 @@ class JenisPaketController extends Controller
      * @param  \App\Models\jenis_paket  $jenis_paket
      * @return \Illuminate\Http\Response
      */
-    public function edit(jenis_paket $jenis_paket)
+    public function edit($id)
     {
-        //
+        return view('boilerplate::jenispaket.edit', [
+            'jenis_paket' => jenis_paket::where([['id', '=', $id], ['status', '=', 1]])->first(),
+        ]);
     }
 
     /**
@@ -68,9 +80,20 @@ class JenisPaketController extends Controller
      * @param  \App\Models\jenis_paket  $jenis_paket
      * @return \Illuminate\Http\Response
      */
-    public function update(Updatejenis_paketRequest $request, jenis_paket $jenis_paket)
+    public function update(Request $request, $id)
     {
-        //
+        $input = jenis_paket::where('id', $id)->first();
+
+        $this->validate($request, [
+                'jenis_paket'  => 'required',
+            ]);
+
+        $input['jenis_paket'] = $request->jenis_paket;
+
+        $jenispaket = $input->save();
+
+        return redirect()->route('boilerplate.jenispaket')
+                ->with('growl', [__('Jenis Paket berhasil diubah'), 'success']);
     }
 
     /**
@@ -79,8 +102,10 @@ class JenisPaketController extends Controller
      * @param  \App\Models\jenis_paket  $jenis_paket
      * @return \Illuminate\Http\Response
      */
-    public function destroy(jenis_paket $jenis_paket)
+    public function destroy($id)
     {
-        //
+        $input = jenis_paket::where('id', $id)->first();
+        $input['status'] = 0;
+        $driver = $input->save();
     }
 }
