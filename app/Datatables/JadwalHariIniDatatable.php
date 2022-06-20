@@ -17,7 +17,7 @@ class JadwalHariIniDatatable extends Datatable
     public function datasource()
     {
         $date = Carbon::now()->isoFormat('Y-MM-DD');
-        $booking = booking::leftjoin('pelanggans', 'pelanggans.id', 'pelanggan_id')->leftJoin('jenis_pakets', 'jenis_pakets.id', 'jenis_paket_id')->leftJoin('mobils', 'mobils.id', 'mobil_id')->leftJoin('wilayahs', 'wilayahs.kode', 'wilayah_id')->whereRaw("bookings.status=1 AND (
+        $booking = booking::leftjoin('pelanggans', 'pelanggans.id', 'pelanggan_id')->leftJoin('jenis_pakets', 'jenis_pakets.id', 'jenis_paket_id')->leftJoin('mobils', 'mobils.id', 'mobil_id')->leftJoin('wilayahs', 'wilayahs.kode', 'wilayah_id')->whereRaw("bookings.status=1 AND booking_status!=4 AND (
             (awal_sewa BETWEEN ? AND ?) OR 
             (akhir_sewa BETWEEN ? AND ?) OR
             (? BETWEEN awal_sewa AND akhir_sewa) OR

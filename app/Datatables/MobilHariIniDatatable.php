@@ -18,7 +18,7 @@ class MobilHariIniDatatable extends Datatable
         $date = Carbon::now()->isoFormat('Y-MM-DD');
         $mobils = mobil::leftJoin('users', 'users.id', 'mobils.user_id')->whereRaw("NOT EXISTS(
             SELECT * FROM bookings 
-            WHERE mobils.id=bookings.mobil_id AND mobils.status=1 NOT IN (
+            WHERE mobils.id=bookings.mobil_id AND mobils.status=1 AND booking_status!=4 AND bookings.status=1 AND (
             (awal_sewa BETWEEN ? AND ?) OR 
             (akhir_sewa BETWEEN ? AND ?) OR
             (? BETWEEN awal_sewa AND akhir_sewa) OR
