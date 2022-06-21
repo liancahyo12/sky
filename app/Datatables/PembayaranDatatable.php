@@ -52,8 +52,8 @@ class PembayaranDatatable extends Datatable
             Column::add('Waktu Bayar')
                 ->data('waktu_bayar'),
                 
-            Column::add('Sisa Tagihan')
-                ->data('sisa_tagihan'),
+            // Column::add('Sisa Tagihan')
+            //     ->data('sisa_tagihan'),
 
             Column::add('Keterangan')
                 ->data('keterangan'),

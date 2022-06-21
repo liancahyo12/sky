@@ -50,11 +50,11 @@
         <x-boilerplate::input name="tagihan" id="tagihan" label="Sisa Tagihan" value="{{ $booking->sisa_tagihan }}" disabled/>
         @if( $booking->booking_status==1 )
             @permission('proses_booking')
-            <a href="/proses-booking/{{ $booking->id }}"><button class="btn btn-warning">Proses</button></a>
+            <a href="/proses-booking/{{ $booking->id }}"><button data-action="book" class="btn btn-warning">Proses</button></a>
             @endpermission
         @elseif( $booking->booking_status==2 )
             @permission('selesai_booking')
-            <a href="/selesai-booking/{{ $booking->id }}"><button class="btn btn-success">Selesaikan</button></a>
+            <a href="/selesai-booking/{{ $booking->id }}"><button data-action="book" class="btn btn-success">Selesaikan</button></a>
             @endpermission
         @endif
         @permission('cetak_tagihan')

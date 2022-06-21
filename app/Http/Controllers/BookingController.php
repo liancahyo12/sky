@@ -277,9 +277,129 @@ class BookingController extends Controller
      * @param  \App\Models\booking  $booking
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, booking $booking)
+    public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+                'tgl_sewa' => 'required',
+                'wilayah' => 'required',
+                'driver' => 'required',
+                'mobil' => 'required',
+                'jenis_paket' => 'required',
+                'biaya_investor' => 'required',
+                'biaya_danlap' => 'required',
+                'total_biaya' => 'required',
+                'biaya_adm' => 'required',
+            ]);
+
+        // driver req
+        if ($request->driver != 'xx') {
+            $this->validate($request, [
+                'biaya_driver' => 'required',
+            ]);
+        }
+
+        $booking = booking::where([['status', '=', 1], ['id', '=', $id]])->first();
+        $pelanggan = pelanggan::where([['status', '=', 1], ['id', '=', $booking->pelanggan_id]])->first();
+
+        //data booking
+        $driver;
+        $bbmtol= '';
+        $booking['mobil_id'] = $request->mobil;
+        $booking['jenis_paket_id'] = biaya_mobil::where('id', $request->jenis_paket)->value('jenis_paket_id');
+        $booking['biaya_mobil_id'] = $request->jenis_paket;
+
+        $booking['awal_sewa'] = $request->input('tgl_sewa.start');
+        $booking['akhir_sewa'] = $request->input('tgl_sewa.end');
+        $booking['wilayah_id'] = $request->wilayah;
+        $booking['biaya_investor'] = $request->biaya_investor;
+        $booking['biaya_danlap'] = $request->biaya_danlap;
+        $booking['biaya_bbmtol'] = $request->biaya_bbmtol;
+        $booking['biaya_driver'] = $request->biaya_driver;
+
+        $hari = Carbon::parse($request->input('tgl_sewa.start'))->diffInDays(Carbon::parse($request->input('tgl_sewa.end')))+1;
+        
+        $total=($request->biaya_investor+$request->biaya_danlap+$request->biaya_bbmtol+$request->biaya_driver)*$hari;
+        $booking['biaya_adm'] = $request->biaya_investor*10/100*$hari;
+        $booking['biaya'] = $total;
+        $booking['hari'] = $hari;
+
+        //data invoice
+        if ($request->driver!='xx') {
+            $booking['driver_id'] = $request->driver;
+            $driver = 'Driver';
+        }else {
+            $driver = '*Tidak termasuk Biaya Driver';
+        }
+
+        if ($request->biaya_bbmtol>0) {
+            $bbmtol = 'BBM dan Tol';
+        }else {
+            $bbmtol = '*Tidak termasuk Biaya BBM dan Tol';
+        }
+
+        //noinvoice
+        $mmyy = substr($request->input('tgl_sewa.start'), 0, 7);
+        $mm = substr($request->input('tgl_sewa.end'), 5, 2);
+        $yy = substr($request->input('tgl_sewa.end'), 0, 4);
+
+        $romawi = $this->getRomawi($mm);
+
+        $nourut = substr(DB::table('bookings')->select('noinvoice')->whereRaw('DATE_FORMAT(awal_sewa,"%Y-%m") = ?' , [$mmyy])->orderBy('noinvoice', 'DESC')->limit(1)->value('noinvoice'), 0, 3);
+
+        if ($nourut <= 000) {
+            $nourut = 1;
+        } else {
+            $nourut = $nourut+1;
+        }
+
+        $noinvoice = sprintf("%03d", $nourut).'/SKY-INV'.'/'.$romawi.'/'.$yy;
+        $booking['noinvoice'] = $noinvoice; 
+
+        $pembayaran = pembayaran::where([['status', '=', 1], ['booking_id', '=', $booking->id]])->get([DB::raw('sum(pembayaran) as pembayarana')])->first();
+        $sisa = $total-$pembayaran->pembayarana;
+        $booking['sisa_tagihan'] = $sisa;
+
+        if ($sisa <=0) {
+            $booking['status_tagihan'] = 2;
+        }elseif ($sisa < $total) {
+            $booking['status_tagihan'] = 3;
+        }elseif ($sisa == $total) {
+            $booking['status_tagihan'] = 1;
+        }
+
+        //buat file tagihan
+        $mobil = mobil::where('id', $request->mobil)->first();
+        $tgl_invoice = Carbon::now()->isoFormat('D MMMM Y');
+        $filename = $id.Str::random(16);
+        $template_document = new TemplateProcessor(Storage::path('format/tagihan.docx'));
+        $saveDocPath = Storage::path('tagihan/'.$filename.'.docx');
+        $template_document->setValue('noinvoice', $noinvoice);
+        $template_document->setValue('nama', $pelanggan->nama);
+        $template_document->setValue('tgl_invoice', $tgl_invoice);
+        $template_document->setValue('alamat', $pelanggan->alamat);
+        $template_document->setValue('total', $total);
+        $template_document->setValue('tgl', $request->input('tgl_sewa.start').' s/d '.$request->input('tgl_sewa.end'));
+        $template_document->setValue('mobil', $mobil->tipe.' '.$mobil->plat);
+        $template_document->setValue('driver', $driver);
+        $template_document->setValue('bbmtol', $bbmtol);
+        $template_document->setValue('hari', $hari);
+        $template_document->setValue('hrgmobil', $request->biaya_investor+$request->biaya_danlap);
+        $template_document->setValue('hrgdriver', $request->biaya_driver);
+        $template_document->setValue('hrgbbmtol', $request->biaya_bbmtol);
+        $template_document->setValue('hargamobil', ($request->biaya_investor+$request->biaya_danlap)*$hari);
+        $template_document->setValue('hargadriver', $request->biaya_driver*$hari);
+        $template_document->setValue('hargabbmtol', $request->biaya_bbmtol*$hari);
+        $template_document->saveAs($saveDocPath);
+        $converter = new OfficeConverter($saveDocPath);
+        $converter->convertTo($filename.'.pdf'); 
+        Storage::delete('tagihan/'.$filename.'.docx');
+        $booking['file_tagihan'] = 'tagihan/'.$filename.'.pdf'; 
+
+        //simpan data booking
+        $book = $booking->save();
+
+        return redirect()->route('boilerplate.booking')
+                ->with('growl', [__('Booking berhasil ditambahkan'), 'success']);
     }
 
     /**

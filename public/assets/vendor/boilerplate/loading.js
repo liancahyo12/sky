@@ -15,3 +15,12 @@ $(document).on('click', '[data-action="batal"]', function() {
 
     return false;
 });
+
+$(document).on('click', '[data-action="book"]', function() {
+    if(confirm('Apakah anda yakin?')) {
+        $("#waitttAmazingLover").css("display", "block");
+        return true;
+    }
+
+    return false;
+});
