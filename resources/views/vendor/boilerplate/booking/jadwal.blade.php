@@ -13,7 +13,7 @@
             <span class="badge badge-pill badge-success">Selesai</span>
         </x-slot>
         
-        <x-boilerplate::select2 name="mobil" id="mobil" label="Cari Berdasarakan Mobil" required>
+        <x-boilerplate::select2 name="mobil" id="mobil" label="Cari Berdasarakan Mobil" required allow-clear="true" :placeholder="'-'">
                 @foreach ($mobil as $position)
                     <option value="{{ $position->id }}">{{ $position->mobil }}</option>
                 @endforeach
