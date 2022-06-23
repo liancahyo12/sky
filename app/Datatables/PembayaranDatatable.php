@@ -63,12 +63,12 @@ class PembayaranDatatable extends Datatable
                 ->actions(function(pembayaran $pembayaran) {
                     $edit='';
                     $delete='';
-                    if (Auth::user()->hasPermission('edit_bayar')) {
-                        $edit = Button::edit('boilerplate.edit-bayar-booking', $pembayaran->id);
-                    }
-                    // if (Auth::user()->hasPermission('delete_bayar')) {
-                    //     $delete = Button::delete('boilerplate.delete-bayar-booking', $pembayaran->id);
+                    // if (Auth::user()->hasPermission('edit_bayar')) {
+                    //     $edit = Button::edit('boilerplate.edit-bayar-booking', $pembayaran->id);
                     // }
+                    if (Auth::user()->hasPermission('delete_bayar')) {
+                        $delete = Button::delete('boilerplate.delete-bayar-booking', $pembayaran->id);
+                    }
                     return join([$edit, $delete]);
                 }),
         ];
