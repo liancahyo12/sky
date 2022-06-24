@@ -3,7 +3,7 @@
 # as we have to install them in multiple places.
 # This helps keep ou Dockerfiles DRY -> https://bit.ly/dry-code
 # You can see a list of required extensions for Laravel here: https://laravel.com/docs/8.x/deployment#server-requirements
-ARG PHP_EXTS="bcmath ctype fileinfo mbstring pdo pdo_mysql dom pcntl"
+ARG PHP_EXTS="bcmath ctype fileinfo mbstring pdo pdo_mysql dom pcntl zip gd"
 ARG PHP_PECL_EXTS="redis"
 
 # We need to build the Composer base to reuse packages we've installed
@@ -25,7 +25,7 @@ RUN addgroup -S composer \
     && adduser -S composer -G composer \
     && chown -R composer /opt/apps/sky \
     && apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev zip libzip-dev oniguruma-dev libreoffice \
-    && docker-php-ext-install ${PHP_EXTS} zip \
+    && docker-php-ext-install ${PHP_EXTS}\
     && pecl install ${PHP_PECL_EXTS} \
     && docker-php-ext-enable ${PHP_PECL_EXTS} \
     && apk del build-dependencies
@@ -89,7 +89,7 @@ WORKDIR /opt/apps/sky
 # used to compile our PHP extensions, as well as install all the extensions themselves.
 # You can see a list of required extensions for Laravel here: https://laravel.com/docs/8.x/deployment#server-requirements
 RUN apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev zip libzip-dev libreoffice && \
-    docker-php-ext-install -j$(nproc) ${PHP_EXTS} zip && \
+    docker-php-ext-install -j$(nproc) ${PHP_EXTS} && \
     pecl install ${PHP_PECL_EXTS} && \
     docker-php-ext-enable ${PHP_PECL_EXTS} && \
     apk del build-dependencies
@@ -108,7 +108,7 @@ ARG PHP_PECL_EXTS
 WORKDIR /opt/apps/sky
 
 RUN apk add --virtual build-dependencies --no-cache ${PHPIZE_DEPS} openssl ca-certificates libxml2-dev oniguruma-dev zip libzip-dev libreoffice && \
-    docker-php-ext-install -j$(nproc) ${PHP_EXTS} zip && \
+    docker-php-ext-install -j$(nproc) ${PHP_EXTS} && \
     pecl install ${PHP_PECL_EXTS} && \
     docker-php-ext-enable ${PHP_PECL_EXTS} && \
     apk del build-dependencies
